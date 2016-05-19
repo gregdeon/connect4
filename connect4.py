@@ -6,19 +6,22 @@ class connect4(object):
     cols = 7
 
     def __init__(self):
-        # Board: a list of columns holding 1s or 2s
-        self.board = [[] for i in range(self.cols)]
+        # Board: a list of columns holding 0s (no move) or 1s or 2s
+        self.board = [[0]*self.rows for i in range(self.cols)]
+        # Height: how many pieces have been played in each column
+        self.height = [0]*self.cols
 
-    def canPlayCol(self, col):
+    def canMoveCol(self, col):
         # Check if we can play in column <col> (0-indexed)
         # Returns true if this is a legal move
-        return len(self.board[col]) < self.rows
+        return self.height[col] < self.rows
 
     def move(self, player, col):
         # If possible, get player <player> to move in column <col>
         # Returns true if the move was successful
-        if self.canPlayCol(col):
-            self.board[col].append(player)
+        if self.canMoveCol(col):
+            self.board[col][self.height[col]] = player
+            self.height[col] += 1
             return True
         return False
 
@@ -35,7 +38,7 @@ class connect4(object):
     def checkWinPosition(self, x, y):
         # Check if there's a winner with a bottom-left-most piece 
         # at position (x, y)
-        winner = self.pieceAt(x, y)
+        winner = self.board[x][y]
 
         # Can't win here if nobody's played it
         if winner == 0:
@@ -70,23 +73,21 @@ class connect4(object):
 
     def pieceAt(self, x, y):
         # Helper function for win-checking
+        # Avoids going out of bounds, saving us some work
         if x < 0 or x >= self.cols:
             return 0
-        if y < 0 or y >= len(self.board[x]):
+        if y < 0 or y >= self.rows:
             return 0
         return self.board[x][y]
+
 
     def printBoard(self):
         # Print the board to the screen
         for y in range(self.rows)[::-1]:
             s = ""
             for x in range(self.cols):
-                if(len(self.board[x]) > y):
-                    s += str(self.board[x][y])
-                else:
-                    s += "."
+                s += str(self.board[x][y])
             print s
-
 
 def main():
     c4 = connect4()
@@ -100,7 +101,7 @@ def main():
             col = int(raw_input("Player {}: ".format(player)))
             if col < 1 or \
                 col > c4.cols or \
-                not c4.canPlayCol(col-1):
+                not c4.canMoveCol(col-1):
                 raise ValueError()
             c4.move(player, col-1)
             player = 3-player
