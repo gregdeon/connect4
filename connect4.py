@@ -1,12 +1,16 @@
 # connect4.py
 # Main class for Connect 4 interface
 
+# Imports for connect4 class
 from basePlayer import *
+
+# Imports for main script
+import util
+from humanPlayer import *
 
 class connect4(object):
     rows = 6
-    cols = 7
-
+    cols = 7 
     def __init__(self, player1, player2):
         # Board: a list of columns holding 0s (no move) or 1s or 2s
         self.board = [[0]*self.rows for i in range(self.cols)]
@@ -85,14 +89,6 @@ class connect4(object):
         return self.board[x][y]
 
 
-    def printBoard(self):
-        # Print the board to the screen
-        for y in range(self.rows)[::-1]:
-            s = ""
-            for x in range(self.cols):
-                s += str(self.board[x][y])
-            print s
-
     def playGame(self):
         # The main game loop
         # Returns number of winning player (1 or 2)
@@ -123,13 +119,13 @@ class connect4(object):
         return self.checkWin()
 
 def main():
-    player1 = basePlayer()
+    player1 = humanPlayer()
     player2 = basePlayer()
     c4 = connect4(player1, player2)
     winner = c4.playGame()
 
     # Game over
-    c4.printBoard()
+    util.printBoard(c4.board)
     print "Winner: Player {}!".format(winner)
 
 if __name__ == "__main__":
