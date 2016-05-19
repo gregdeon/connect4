@@ -1,15 +1,19 @@
 # connect4.py
 # Main class for Connect 4 interface
 
+from basePlayer import *
+
 class connect4(object):
     rows = 6
     cols = 7
 
-    def __init__(self):
+    def __init__(self, player1, player2):
         # Board: a list of columns holding 0s (no move) or 1s or 2s
         self.board = [[0]*self.rows for i in range(self.cols)]
         # Height: how many pieces have been played in each column
         self.height = [0]*self.cols
+        # Player modules: we ask these to pick their moves
+        self.players = [player1, player2]
 
     def canMoveCol(self, col):
         # Check if we can play in column <col> (0-indexed)
@@ -89,29 +93,44 @@ class connect4(object):
                 s += str(self.board[x][y])
             print s
 
+    def playGame(self):
+        # The main game loop
+        # Returns number of winning player (1 or 2)
+
+        # Start: player 1 = index 0 
+        player = 0
+        while not self.checkWin():
+            # TODO: check if we've reached a draw
+            # Ask the player to move
+            nextMove = self.players[player].move(self.board)
+
+            # If invalid, ask them again 
+            if nextMove < 0 or \
+                nextMove >= self.cols or \
+                not self.canMoveCol(nextMove):
+                continue
+
+            # Move is valid, so apply it
+            self.move(player+1, nextMove)
+
+            # Pick the next player
+            if player == 0:
+                player = 1
+            else:
+                player = 0
+
+        # Check who the winner is
+        return self.checkWin()
+
 def main():
-    c4 = connect4()
-    player = 1
-
-    while not c4.checkWin():
-        print ""
-        c4.printBoard()
-        print ""
-        try:
-            col = int(raw_input("Player {}: ".format(player)))
-            if col < 1 or \
-                col > c4.cols or \
-                not c4.canMoveCol(col-1):
-                raise ValueError()
-            c4.move(player, col-1)
-            player = 3-player
-        except:
-            print "Invalid move -- try again."
-
+    player1 = basePlayer()
+    player2 = basePlayer()
+    c4 = connect4(player1, player2)
+    winner = c4.playGame()
 
     # Game over
     c4.printBoard()
-    print "Winner: Player {}!".format(3-player)
+    print "Winner: Player {}!".format(winner)
 
 if __name__ == "__main__":
     main()
