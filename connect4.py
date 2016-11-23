@@ -1,4 +1,4 @@
-# connect4.py
+# connect4.py Hello
 # Main class for Connect 4 interface
 
 # Imports for connect4 class
